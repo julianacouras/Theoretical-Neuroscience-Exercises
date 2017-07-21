@@ -1,0 +1,236 @@
+\documentclass{report}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath} 
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{color}
+
+\title{Theoretical Neuroscience - Exercise's Reports}
+\author{Juliana Couras}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\begin{abstract}
+These booklet intends to sum up the main concepts and equations useful to understand the resolutions of the exercises of the book Theoretical Neuroscience by Peter Dayan and L. F. Abbot. I take absolutely no credit for any of these information. I strongly recommend a careful reading of the book in order to attain a better understanding of the subjects. 
+\end{abstract}
+\chapter{Neural Encoding and Decoding}
+\section{Neural Encoding I: Firing Rates and Spike Statistics}
+\subsection{Spike Trains and Firing Rates}
+
+A sequence of action potentials can be represented as a vector which elements are the times when the spikes occurred. Since spikes can be represented as a narrow bar that bursts at time $t_{i}$, then one can think of it as the representation of the Dirac $\delta$ function. Therefore, the spike sequence can be viewed as the sum of Dirac $\delta$ functions. 
+\begin{equation}
+\rho(t) = \sum_{i=1}^{n} \delta(t-t_{i})
+\end{equation}
+$\rho(t)$ symbolizes the \textbf{neural response function}.
+\\\paragraph{Dirac Delta Function}
+The Dirac $\delta$ function can be defined as the following
+
+\begin{equation}
+\delta(t) = \{
+\begin{array}{ll}
+0 & t\neq 0\\
+\infty  & t = 0\\
+\end{array}
+\\
+\end{equation}
+with
+\begin{equation}
+\int_{t_{1}}^{t_{2}} \delta(t) dt = 1, 0 \in [t_{1}, t_{2}]
+\end{equation}
+This can be seen as the limit of a Gaussian
+\begin{equation}
+\delta(t) = \lim_{\sigma\to0} \frac{1}{\sqrt{2\pi}\sigma}e^{\frac{-t^{2}}{2\sigma^{2}}}
+\end{equation}
+The Dirac Function has an important property
+\begin{equation}
+\int f(t)\delta(t) dt = f(0)\iff f(0)\int\delta(t) dt = f(0
+\end{equation}
+for a (continuous ?) function f. This can be explained by the fact that $\delta(t) = 0$ everywhere except at t = 0. Therefore, the only value of f that matters is f(0). Thus, $f(t)\delta(t) = f(0)\delta(t)$.
+In a general form, 
+\begin{equation}
+\int f(t)\delta(t-t_{0}) dt = f(t_{0})
+\end{equation}
+\\Now that we know a little more about the Dirac function it is easier to understand that for any well-behaved function h(t),
+\begin{equation}
+\sum_{i=1}^{n} h(t-t_{i}) = \int_{-\infty}^{+\infty} h(\tau)\rho(t-\tau) d\tau
+\end{equation}
+In the following lines we will discuss the quantities used to characterize the neural response.
+\paragraph{Spike-count rate - r}
+is obtained by counting the number of action potentials that appear during a trial and dividing by the duration of the trial. 
+\\Single trial, entire trial duration.
+\begin{equation}
+r = \frac{n}{T}=\frac{1}{T}\int_{0}^{T}\rho(\tau) d\tau
+\end{equation}
+The spike-count rate can be determined from a single trial, but it looses temporal resolution.
+\paragraph{Firing-rate - r(t)} is time-dependent and determined by counting the spikes occurring between times t and $t +\triangle t$, dividing by $\triangle t$. To actually calculate the firing rate, since too narrow $\triangle t$ will allow only 0 or 1 spikes, we average the number of spikes (over trials) appearing during $\triangle t$. In an instantaneous firing rate, the generation of each spike is independent of other spikes in the sequence, thus neglecting the refractory period and bursting. The correlation code tries to avoid this. 
+\\Multiple trials, time interval.
+\begin{equation}
+r(t) = \frac{1}{\triangle t}\int_{t}^{t+\triangle t}\langle\rho(\tau)\rangle d\tau
+\end{equation}
+Where $\langle\rho(\tau)\rangle$ is the \textbf{trial-averaged neural response function} which integrals represents the average number of spikes occurring during $\triangle t$.
+\\From equation 1.9 follows that the \textbf{average number of spikes} occurring in $\triangle t$ over multiple trials is $r(t)\triangle t$. If $\triangle t$ is small enough, the maximum number of spikes occurring during that time is 1, therefore $r(t)\triangle t$ is the probability that a spike occurs during this time -\textbf{ spiking probability}. 
+\\From equation 1.7, it can also be stated that 
+\begin{equation}
+\int h(\tau)\langle\rho(t-\tau)\rangle d\tau= \int h(\tau)r(t-\tau) d\tau
+\end{equation}
+Thus, the averaged neural response and the firing-rate are equivalent when used inside integrals.
+\paragraph{Average firing-rate - \textbf{$\langle r \rangle$}} is the averaged spike-count rate over trials.
+\\Multiple trials, entire trial duration.
+\begin{equation}
+\langle r \rangle = \frac{\langle n \rangle}{T}=\frac{1}{T} \int_{0}^{T}\langle \rho(\tau) \rangle d\tau = \frac{1}{T} \int_{0}^{T} r(t) d\tau
+\end{equation}
+\subsection{Measuring firing rates}
+Given a sequence of spikes, how can we estimate the firing rates?
+\begin{figure}[H]
+\centering
+  \includegraphics[scale=0.8]{firing.png}
+\caption{Firing rates}
+\end{figure}
+Figure 1.1A shows a spike sequences. One can estimate the firing rate from this spike sequence by dividing time into discrete bins of duration $\triangle t$, count the number of spikes within each bin ad divide by $\triangle t$. Thus, it is the \textbf{spike-count firing rate} over the duration of the bin. The result using bins of $\triangle t = 100ms$ is shown on figure 1.1B.
+\paragraph{Filter kernel - w(t)} We can take a bin of width $\triangle t$ and and slide it along the spike sequence, counting the number of spikes within the bin at each location. The result of it using a bin of $\triangle t = 100ms$ is shown on figure 1.1C. Thus, the firing rate can be approximated by the following sum
+\begin{equation}
+r_{aprox}(t) = \sum_{i=1}^{n} w(t-t_{i})
+\end{equation}
+where the window function is
+\begin{equation}
+w(t) = \{
+\begin{array}{ll}
+\\\frac{1}{\triangle t} & if -\triangle t/2 \leq t < \triangle t/2
+\\0  & otherwise
+\end{array}
+\\
+\end{equation}
+1.12 equation can also be written as a \textbf{linear filter} (the convolution product) 
+\begin{equation}
+r_{aprox}(t) = \int_{-\infty}^{\infty}w(\tau)\rho(t-\tau) d\tau = \rho(t)*w(t)
+\end{equation}
+\\ $\tau$ represents the time windows over which spike times are averaged.
+\\A continuous function like the Gaussian generates a firing-rate that is smooth as the one in figure 1.1D.
+\\ Finally, we can use a filter that takes only into account the spikes that have occurred before a certain time. Such filter is called casual. Figure 1.1E exemplifies this. 
+\subsection{Tuning Curves}
+In this section, the neural response is going to be a function of only one attribute of a stimulus - s.
+\paragraph{Neural response tuning curve f(s)} r can be estimated from a probability distribution of mean f(s), thus f(s) = $\langle r \rangle$. The trial-to-trial deviation is noise. These noise models can be independent of f(s) - \textbf{additive noise} - or dependent of f(s) - \textbf{multiplicative noise}.
+\\\textbf{Gaussian tuning curve}
+\begin{equation}
+f(s) = r_{max}e^{-\frac{1}{2}(\frac{s-s_{max}}{\sigma_{f}})^{2}}
+\end{equation}
+\\\textbf{Cosine tuning curve}
+\begin{equation}
+f(s) = r_{0} + (r_{max}-r_{0})cos(s-s_{max})
+\end{equation}
+\\\textbf{Sigmoidal tuning curve}
+\begin{equation}
+f(s) = \frac{r_{max}}{1+e^{\frac{s_{1/2}-s}{\triangle_{s}}}}
+\end{equation}
+\subsection{What makes a neuron fire?}
+\paragraph{Weber's law} $\triangle s$ is the "noticeable" difference of intensity of two stimulus that can be discriminated and $\triangle s/s$ is constant. 
+\paragraph{Fechner's law}
+\paragraph{Spike-triggered average stimulus $C(\tau)$} is the average value of the stimulus a time interval $\tau$ before the spike. The spike-triggered average stimulus depends of course on the set of stimuli used used during the experiment. 
+\begin{equation}
+C(\tau) = \langle \frac{1}{n}\sum_{i=1}^{n}s(t_{i}-\tau) \rangle \approx \langle \frac{1}{\langle n \rangle}\sum_{i=1}^{n}s(t_{i}-\tau) \rangle
+\end{equation}
+since for large values of n, $n \approx \langle n \rangle $.
+\\From equations 1.7, 1.10 and 1.18 it comes that
+\begin{equation}
+C(\tau)= \frac{1}{\langle n \rangle}\int_{0}^{T}\langle \rho(t) \rangle s(t-\tau) dt = \frac{1}{\langle n \rangle}\int_{0}^{T}\langle r(t) \rangle s(t-\tau) dt
+\end{equation}
+\paragraph{Correlation functions} are useful to determine how two quantities that vary over time are related to each other. The correlation function of the firing rate and the stimulus is 
+\begin{equation}
+Q_{rs}(\tau) = \frac{1}{T}\int_{0}^{T}r(t)s(t+\tau) dt
+\end{equation}
+So, equations 1.19 and 1.20 give the spike-triggered average stimulus as the reverse correlation  function. 
+\begin{equation}
+C(\tau) = \frac{1}{\langle r \rangle}Q_{rs}(-\tau)
+\end{equation}
+\paragraph{White-Noise Stimuli} is used when a stimulus is uncorrelated from one time to the next. This can be expressed using the stimulus-stimulus (stimulus autocorrelation)correlation function, which tells us about how a quantity at one time is related to itself at another time.
+\begin{equation}
+Q_{SS}(\tau) = \frac{1}{T}\int_{0}^{T}s(t)s(t+\tau) dt
+\end{equation}
+\begin{equation}
+Q_{SS}(\tau) = \{
+\begin{array}{ll}
+0 & -T/2 < \tau <T/2\\
+\sigma_{S}^{2}\delta(\tau)  & \tau = 0\\
+\end{array}
+\\
+\end{equation}
+\subsection{Spike-train statistics}
+\paragraph{Point process}
+is a stochastic process that generates a sequence of events. 
+\paragraph{Renewal process }
+If the probability of an event occurring depends on the preceding events and the following ones are independent, then it is called a renewal process.
+\paragraph{Poisson process }All the events are statistically independent. 
+\paragraph{Homogeneous Poisson process} The firing rate is constant over time r(t) = r. It generates every sequence of n spikes over a fixed time with equal probability.Thus, 
+\begin{equation}
+P[t_{1},t_{2}, ..., t_{n}] = n!P_{T}[n](\frac{\triangle t}{T})^{n}
+\end{equation}
+To calculate $P_{T}[n]$ - the probability that an arbitrary sequence of n spikes occurs in T - we divide I into M bins of size $\triangle t= T/M$.
+\begin{equation}
+P_{T}[n] = P(Generating N spikes In M bins)P(Not Generating Spikes In (M-n) Bins)*C_{n}^{M}
+\end{equation}
+Thus,
+\begin{equation}
+P_{T}[n] = lim_{\triangle t\to0}(r\triangle t)^{n}(1-r\triangle t)^{M-n}\frac{M!}{(M-n)!n!}
+\end{equation}
+\\Since as $\triangle t -> 0$ M increases largely, since n is fixed we can write $M -n \approx T/\triangle t$. This approximation gives the Poisson distribution. 
+\\The average number of spikes generated by a Poisson process with constant rate r, over a time T is 
+\begin{equation}
+\langle n \rangle = \sum_{n=0}^{\infty}nP_{T}[n] = \sum_{n=0}^{\infty}n\frac{(rT)^{n}}{n!}e^{-rT}
+\end{equation}
+where rT represents the mean number of events.
+\\The variance in the spike count is 
+\begin{equation}
+\sigma_{n}^{2}=rT = \langle n \rangle
+\end{equation}
+The ratio 
+\begin{equation}
+\frac{\sigma_{n}^{2}}{\langle n \rangle}
+\end{equation}
+is called the \textbf{Fano factor}. {\color{blue} [E01]} And in a homogeneous Poisson process equals 1.
+\paragraph{Interspike Interval distribution } represents the probability density of time intervals between adjacent spikes. Lets suppose that a spike occurs at time $t_{i}$. Using a homogeneous Poisson process, the probability that a new spike occurs at $t_{i+1} \in [t_{i}+\tau,t_{i}+\tau+\triangle t] = P(No Spike Is Fired During Time \tau)P(Spike Is Fired During Time \triangle t)$. From equation 1.27, with n = 0, it comes that
+\begin{equation}
+P[\tau \leq t_{i+1}-t_{i}<\tau + \triangle t]=e^{-r\tau}r\triangle t
+\end{equation}
+\\By definition, the probability density of interspike interval is the equation 1.20 with the $\triangle t$ removed. Thus, the IID for a homogeneous Poisson spike generator is exponential. {\color{blue} [E01]}
+\\We can compute the mean interspike interval
+\begin{equation}
+\langle \tau \rangle = \int_{0}^{\infty}e^{-r\tau}\tau r d\tau = \frac{1}{r}
+\end{equation}
+\\And the variance of the interspike intervals,
+\begin{equation}
+\sigma_{\tau}^{2}=\frac{1}{r^{2}}
+\end{equation}
+\\The \textbf{coefficient of variation} equals 1 in a homogeneous Poisson process. {\color{blue} [E01]}
+\begin{equation}
+C_{V} = \frac{\sigma_{\tau}}{\langle \tau \rangle}
+\end{equation}
+\\The \textbf{spike-train autocorrelation function} is useful to detect patterns in spike sequences, especially oscillations. 
+\begin{equation}
+Q_{\rho \rho}(\tau) = \frac{1}{T}\int_{0}^{\infty}\langle(\rho(t)-\langle r \rangle)(\rho(t+\tau)-\langle r \rangle)\rangle
+\end{equation}
+\\For a homogeneous Poisson process, 
+\begin{equation}
+Q_{\rho \rho}(\tau) = r\delta(\tau)
+\end{equation}
+\paragraph{Inhomogeneous Poisson process} means that the firing rate depends on time. Thus, different sequences of n spikes occur with different probabilities and $p[1_{1}, t_{2},...,t_{n}]$depends on the spike times. The IP is similar to the HP, we just need to replace r by r(t). Therefore, the mean number of events is given by
+\begin{equation}
+\kappa=\int_{0}^{T}r(t)dt
+\end{equation}
+\\And it follows the Poisson distribution
+\begin{equation}
+P_{T}[\kappa] = e^{-\kappa}\frac{\kappa^{\kappa}}{\kappa!}
+\end{equation}
+Since r depends on time, while computing spike times, it can be useful to know the Euler method
+\paragraph{Euler method }  is used to solve differential equations recursively. {\color{blue} [E02]} Given the initial condition - $r_{0}$, the Euler method is based on the definition of derivative
+\begin{equation}
+\frac{df}{dt}=\lim_{\triangle t \to 0}\frac{f(t+\triangle t)-f(t)}{\triangle t}
+\end{equation}
+Thus
+\begin{equation}
+f(t + \triangle t) = f(t) + \frac{df}{dt}\triangle t
+\end{equation}
+\paragraph{Poisson spike generator }
+The spike sequences are stimulated by using some estimate of the firing rate - $r_{est}(t)$. The program steps a $\triangle t$ at time and in each step it generates a $x_{rand}$ between 0 and 1. If $r_{est}(t)>x_{rand}$ then a spike is fired. {\color{blue} [E01]}
+\end{document}
