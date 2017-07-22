@@ -214,6 +214,7 @@ Q_{\rho \rho}(\tau) = \frac{1}{T}\int_{0}^{\infty}\langle(\rho(t)-\langle r \ran
 \begin{equation}
 Q_{\rho \rho}(\tau) = r\delta(\tau)
 \end{equation}
+\\When in computation {\color{blue} [E03]} it might be useful to dived the time T into M bins of size $\triangle t$.The value - $N_{m}$ - of the bin is computed by determining the number of times that any two spikes are separated by a time interval lying between $(m-1/2)\triangle t$ and $(m+1/2)\triangle t$. The histogram value for a bin m is $H_{m}=N_{m}/T -n^{2}\triangle t/T^{2}$
 \paragraph{Inhomogeneous Poisson process} means that the firing rate depends on time. Thus, different sequences of n spikes occur with different probabilities and $p[1_{1}, t_{2},...,t_{n}]$depends on the spike times. The IP is similar to the HP, we just need to replace r by r(t). Therefore, the mean number of events is given by
 \begin{equation}
 \kappa=\int_{0}^{T}r(t)dt
